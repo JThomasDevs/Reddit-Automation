@@ -23,6 +23,7 @@ class Crawler:
         self.options = Options()
         self.options.add_argument('--ignore-certificate-errors')
         #self.options.add_argument('--headless=new')
+        self.options.add_argument('--fullscreen')
         self.options.add_argument('--disk-cache-size=0')
         self.options.set_capability('acceptSSLCerts', True)
         self.options.add_argument('--no-sandbox')
