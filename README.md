@@ -6,6 +6,9 @@ This automator is not intended to share any sort of functionality with the now d
 More features to come.
 
 ### Current Features:
+- Create new accounts
 - Login
 - Navigate to specified subreddit
 - Upvote/Downvote bombs (upvote/downvote every post withing a given range on a subreddit)
+
+WARNING: Abusing the create_account() function can and will result in a temporary or permanant IP ban from Reddit account creation.
