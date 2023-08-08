@@ -1,7 +1,7 @@
 from Bot import RedditBot
 
-# The reddit-accounts.txt file should be formatted as follows:
-# email:password:username
+# The reddit-accounts.csv file should be formatted as follows:
+# username:password:email
 # You log in to Reddit using the username, not the email
 with open('reddit-accounts.txt', 'r') as accounts:
     info = accounts.readline().split(':')

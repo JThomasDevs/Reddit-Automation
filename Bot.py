@@ -64,8 +64,8 @@ class RedditBot(Crawler):
             time.sleep(1)
 
         # Write account info to file
-        with open('reddit-accounts.txt', 'a') as accounts:
-            accounts.write(f'\n{self.username}@gmail.com:{self.password}:{self.username}')
+        with open('reddit-accounts.csv', 'a') as accounts:
+            accounts.write(f'\n{self.username}:{self.password}:{self.username}@gmail.com')
         print('Account info written to file.')
 
         print("Account created!")
@@ -107,6 +107,8 @@ class RedditBot(Crawler):
                 # If the post is already downvoted, skip it
                 if post.find_element(By.CSS_SELECTOR, 'button[aria-label="downvote"]').get_attribute(
                         'aria-pressed') == 'true':
+                    if post.get_attribute('id') not in post_ids:
+                        post_ids.append(post.get_attribute('id'))
                     continue
                 # Downvote the post
                 try:
@@ -120,7 +122,12 @@ class RedditBot(Crawler):
                     continue
                 if pressed == num_posts:
                     break
-            time.sleep(5)
+            # Scroll down to load more posts if necessary
+            # This is for when all visible posts are already downvoted
+            if len(post_ids) <= len(posts):
+                self.driver.execute_script('window.scrollBy(0, 3000);')
+                print('Scrolled down')
+            time.sleep(2)
 
         if pressed == 0:
             print('No posts to downvote')
@@ -144,6 +151,8 @@ class RedditBot(Crawler):
                 # If the post is already upvoted, skip it
                 if post.find_element(By.CSS_SELECTOR, 'button[aria-label="upvote"]').get_attribute(
                         'aria-pressed') == 'true':
+                    if post.get_attribute('id') not in post_ids:
+                        post_ids.append(post.get_attribute('id'))
                     continue
                 # Upvote the post
                 try:
@@ -157,7 +166,12 @@ class RedditBot(Crawler):
                     continue
                 if pressed == num_posts:
                     break
-            time.sleep(5)
+            # Scroll down to load more posts if necessary
+            # This is for when all visible posts are already downvoted
+            if len(post_ids) <= len(posts):
+                self.driver.execute_script('window.scrollBy(0, 3000);')
+                print('Scrolled down')
+            time.sleep(2)
 
         if pressed == 0:
             print('No posts to upvote')
