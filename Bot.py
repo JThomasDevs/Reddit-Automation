@@ -15,7 +15,6 @@ class RedditBot(Crawler):
 
     def create_account(self):
         """Creates a Reddit account using a randomly generated username, email, and password."""
-        # TODO: This function /should/ work properly, but more testing is still needed.
 
         print('Creating account...')
         self.driver.get('https://www.reddit.com/register')
@@ -62,22 +61,18 @@ class RedditBot(Crawler):
 
         # Wait for account creation to be confirmed
         while 'signup_survey' not in self.driver.current_url:
-            # Sometimes, too many accounts have been created in too short of a time
-            if self.driver.find_element(By.CLASS_NAME, 'AnimatedForm__submitStatus m-error').is_displayed():
-                print('Too many accounts created recently. Wait about 10 minutes and try again.')
-            if 'signup_survey' in self.driver.current_url:
-                break
             time.sleep(1)
 
         # Write account info to file
         with open('reddit-accounts.txt', 'a') as accounts:
             accounts.write(f'\n{self.username}:{self.password}:{self.username}')
+        print('Account info written to file.')
 
         print("Account created!")
-        time.sleep(1000)
+        time.sleep(5)
 
     def login(self):
-        """Log in to Reddit so that your bot may perform actions on the website"""
+        """Log in to Reddit"""
 
         print('Logging in...')
         self.driver.get('https://old.reddit.com/')
