@@ -65,7 +65,7 @@ class RedditBot(Crawler):
 
         # Write account info to file
         with open('reddit-accounts.txt', 'a') as accounts:
-            accounts.write(f'\n{self.username}:{self.password}:{self.username}')
+            accounts.write(f'\n{self.username}@gmail.com:{self.password}:{self.username}')
         print('Account info written to file.')
 
         print("Account created!")

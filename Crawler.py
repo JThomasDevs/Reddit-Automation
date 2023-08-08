@@ -27,6 +27,10 @@ class Crawler:
         self.options.set_capability('acceptSSLCerts', True)
         self.options.add_argument('--no-sandbox')
         self.options.add_argument('--incognito')
+
+        self.driver = None
+
+    def start(self):
         self.driver = Chrome(options=self.options)
         self.driver.maximize_window()
         self.driver.implicitly_wait(10)
