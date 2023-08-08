@@ -14,31 +14,64 @@ class RedditBot(Crawler):
         self.password = None
 
     def create_account(self):
-        # THIS FUNCTION DOES NOT WORK RIGHT NOW - IT WON'T CLICK THE SUBMIT BUTTON
-        # TODO: Look into using the modern reddit registration page as opposed to old.reddit.com
+        """Creates a Reddit account using a randomly generated username, email, and password."""
+        # TODO: This function /should/ work properly, but more testing is still needed.
 
         print('Creating account...')
-        self.driver.get('https://old.reddit.com/register')
+        self.driver.get('https://www.reddit.com/register')
 
         # Set account info
         self.username = self.rand_username()
+        while len(self.username) > 20:
+            self.username = self.rand_username()
         self.email = self.username + '@gmail.com'
         self.password = self.rand_pass()
-        # Send the info to the account creation form and submit the form
-        self.driver.find_element(By.NAME, 'user').send_keys(self.username)
-        self.driver.find_element(By.NAME, 'passwd').send_keys(self.password)
-        self.driver.find_element(By.NAME, 'passwd2').send_keys(self.password)
-        self.driver.find_element(By.NAME, 'email').send_keys(self.email)
 
-        self.driver.switch_to.frame(self.driver.find_element(By.XPATH, '//iframe[starts-with(@name,"a-") and starts-with(@src,"https://www.google.com/recaptcha")]'))
-        self.driver.find_element(By.CLASS_NAME, 'recaptcha-checkbox-border').click()
-        for i in range(60):
-            print(i+1)
-            time.sleep(1)
+        # Begin info input
+        self.driver.find_element(By.NAME, 'email').send_keys(self.email)
+        self.driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
+        time.sleep(1)
+        self.driver.find_element(By.NAME, 'username').send_keys(self.username)
+        self.driver.find_element(By.NAME, 'password').send_keys(self.password)
+        time.sleep(1)
+        self.driver.find_element(By.XPATH, '/html/body/div[1]/main/div[2]/div/div/div[3]/button').click()
+        print('Clicked submit button')
+        time.sleep(5)
+
+        # While the recaptcha checkbox is not checked
+        while 'register' in self.driver.current_url:
+            self.driver.switch_to.frame(self.driver.find_element(By.XPATH, '//iframe[starts-with(@name,"a-") and starts-with(@src,"https://www.google.com/recaptcha")]'))
+            self.driver.find_element(By.CLASS_NAME, 'recaptcha-checkbox-border').click()
+            print('Clicked recaptcha checkbox')
+
+            # Wait to manually complete captcha
+            for i in range(60):
+                print(i+1)
+                time.sleep(1)
+                # Translation: If the recaptcha checkbox is checked, break
+                if self.driver.find_element(By.XPATH, '/html/body/div[2]/div[3]/div[1]/div/div/span').get_attribute('aria-checked') == 'true':
+                    break
+            if self.driver.find_element(By.XPATH, '/html/body/div[2]/div[3]/div[1]/div/div/span').get_attribute(
+                    'aria-checked') == 'true':
+                break
+
+        # Submit again
         self.driver.switch_to.default_content()
-        self.driver.find_element(By.CLASS_NAME, 'c-btn c-btn-primary c-pull-right').click()
+        self.driver.find_element(By.XPATH, '/html/body/div[1]/main/div[2]/div/div/div[3]/button').click()
+        print('Clicked submit button again')
+
+        # Wait for account creation to be confirmed
+        while 'signup_survey' not in self.driver.current_url:
+            # Sometimes, too many accounts have been created in too short of a time
+            if self.driver.find_element(By.CLASS_NAME, 'AnimatedForm__submitStatus m-error').is_displayed():
+                print('Too many accounts created recently. Wait about 10 minutes and try again.')
+            if 'signup_survey' in self.driver.current_url:
+                break
+            time.sleep(1)
+
+        # Write account info to file
         with open('reddit-accounts.txt', 'a') as accounts:
-            accounts.write(f'{self.username}:{self.password}:{self.username}')
+            accounts.write(f'\n{self.username}:{self.password}:{self.username}')
 
         print("Account created!")
         time.sleep(1000)
