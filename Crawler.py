@@ -22,7 +22,7 @@ class Crawler:
         # Set browser settings and launch window when bot is created
         self.options = Options()
         self.options.add_argument('--ignore-certificate-errors')
-        #self.options.add_argument('--headless=new')
+        # self.options.add_argument('--headless=new')
         self.options.add_argument('--disk-cache-size=0')
         self.options.set_capability('acceptSSLCerts', True)
         self.options.add_argument('--no-sandbox')
@@ -31,6 +31,7 @@ class Crawler:
         self.driver = None
 
     def start(self):
+        # This is now its own method so that the browser window does not open right when the bot is created
         self.driver = Chrome(options=self.options)
         self.driver.maximize_window()
         self.driver.implicitly_wait(10)
