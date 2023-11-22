@@ -4,6 +4,7 @@ import string
 from selenium.webdriver.chrome.options import Options
 from undetected_chromedriver import Chrome
 
+
 class Crawler:
 
     def __init__(self):
@@ -24,7 +25,6 @@ class Crawler:
         self.options.add_argument('--ignore-certificate-errors')
         # self.options.add_argument('--headless=new')
         self.options.add_argument('--disk-cache-size=0')
-        self.options.set_capability('acceptSSLCerts', True)
         self.options.add_argument('--no-sandbox')
         self.options.add_argument('--incognito')
 
